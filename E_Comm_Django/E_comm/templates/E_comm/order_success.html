@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Successful</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white shadow-lg rounded-xl p-8 max-w-xl w-full text-center">
+        <div class="text-green-500 text-5xl mb-4">
+            ✅
+        </div>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Order Placed Successfully!</h1>
+        <p class="text-gray-600 mb-6">Thank you for shopping with us. Your order has been placed and is being processed.</p>
+
+        {% if order %}
+            <div class="text-left mb-6">
+                <h2 class="text-xl font-semibold mb-2">Order Summary:</h2>
+                <p><strong>Order ID:</strong> #{{ order.id }}</p>
+                <p><strong>Placed At:</strong> {{ order.ordered_at }}</p>
+                <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+            </div>
+        {% endif %}
+
+        <a href="{% url 'product_list' %}" class="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+            Continue Shopping
+        </a>
+    </div>
+</body>
+</html>

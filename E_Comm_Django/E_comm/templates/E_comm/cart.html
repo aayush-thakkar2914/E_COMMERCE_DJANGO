@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+
+    <!-- ✅ Navbar with Logout -->
+    <div class="max-w-4xl mx-auto flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">E-Commerce</h1>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <!-- ✅ Cart Section -->
+    <div class="max-w-4xl mx-auto bg-white shadow rounded-xl p-6">
+        <h2 class="text-2xl font-bold mb-6">Your Cart</h2>
+        
+        {% if cart_items %}
+            <ul class="space-y-4">
+                {% for item in cart_items %}
+                    <li class="flex justify-between items-center border-b pb-4">
+                        <div>
+                            <p class="text-lg font-semibold">{{ item.product.name }}</p>
+                            <p class="text-sm text-gray-600">Qty: {{ item.quantity }} × ₹{{ item.product.price }}</p>
+                        </div>
+                        <div class="flex gap-4 items-center">
+                            <span class="text-lg font-medium">₹{{ item.total_price }}</span>
+                            <a href="{% url 'remove_from_cart' item.id %}" class="text-red-500 hover:underline">Remove</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="mt-6 flex justify-between items-center">
+                <a href="{% url 'product_list' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Continue Shopping
+                </a>
+                <div>
+                    <h3 class="text-xl font-bold">Total: ₹{{ total }}</h3>
+                    <form action="{% url 'place_order' %}" method="post" class="mt-4 inline-block">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-600">Your cart is empty.</p>
+            <div class="mt-6">
+                <a href="{% url 'product_list' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Continue Shopping
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
