@@ -44,35 +44,20 @@ def order_success(request, order_id):
 @login_required
 def place_order(request):
     cart_items = CartItem.objects.filter(user=request.user)
-
     if not cart_items.exists():
-        return redirect('cart')
-
-    # ✅ Calculate total amount
+        return redirect('cart')    
     total_amount = sum(item.product.price * item.quantity for item in cart_items)
-
-    # ✅ Create the order with total amount
     order = Order.objects.create(
         user=request.user,
         ordered_at=timezone.now(),
-        total_amount=total_amount, # make sure this field exists in your Order model
+        total_amount=total_amount,
         is_paid = True
     )
-
-    # ✅ Associate cart items with the order (if you're using a relation)
     order.items.set(cart_items)
     order.save()
-
-    # ✅ Mark current cart as ordered
     Cart.objects.filter(user=request.user, is_ordered=False).update(is_ordered=True)
-
-    # ✅ Clear current cart items
     cart_items.delete()
-
-    # ✅ Create a new cart (optional)
     Cart.objects.create(user=request.user, is_ordered=False)
-
-    # ✅ Redirect to success page with order ID
     return redirect('order_success', order_id=order.id)
 
 @login_required
@@ -82,16 +67,10 @@ def order_detail(request, order_id):
 
 @login_required
 def add_to_cart(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
-
-    # Get or create an active cart for the user
+    product = get_object_or_404(Product, pk=product_id)   
     cart, created = Cart.objects.get_or_create(user=request.user, is_ordered=False)
-
-    # Check if the item is already in the cart
     cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
-
     if not created:
         cart_item.quantity += 1
         cart_item.save()
-
     return redirect('cart')  # Adjust according to your cart page name

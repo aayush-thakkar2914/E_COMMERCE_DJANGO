@@ -12,5 +12,5 @@ class CartItemAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('user', 'ordered_at', 'is_paid')
-    filter_horizontal = ('items',)  # For many-to-many field UI
+    filter_horizontal = ('items',)  
 

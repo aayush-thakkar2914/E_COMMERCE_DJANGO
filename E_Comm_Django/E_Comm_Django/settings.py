@@ -138,6 +138,6 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'login'
 
-TIME_ZONE = 'Asia/Kolkata'  # Or your local timezone
+TIME_ZONE = 'Asia/Kolkata'  
 USE_TZ = True
 
