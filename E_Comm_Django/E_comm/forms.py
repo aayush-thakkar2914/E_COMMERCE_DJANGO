@@ -1,3 +1,5 @@
+# forms.py
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
@@ -31,3 +33,41 @@ class CustomLoginForm(AuthenticationForm):
         'autocomplete': 'current-password',
         'class': 'w-full px-3 py-2 border border-gray-300 rounded-md'
     }))
+
+class ProfileCreationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input'}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input'}))
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+
+# Add to forms.py
+from .models import UserProfile
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country', 'phone_number']
+        widgets = {
+            'address_line1': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            }),
+            'address_line2': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            }),
+            'city': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            }),
+            'state': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            }),
+            'postal_code': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            }),
+            'country': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500'
+            }),
+        }

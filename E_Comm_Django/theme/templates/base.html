@@ -1,19 +1,28 @@
-{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-    <title>Django Tailwind</title>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		{% tailwind_css %}
-	</head>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Django Shop{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✅ Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Header/Navbar -->
+    <nav class="bg-white shadow p-4 flex justify-between items-center">
+        <div class="text-lg font-bold text-blue-600"><a href="{% url 'product_list' %}">Django Shop</a></div>
+        <div class="space-x-4 text-sm">
+            <a href="{% url 'product_list' %}" class="text-gray-700 hover:text-blue-600">Products</a>
+            <a href="{% url 'cart' %}" class="text-gray-700 hover:text-blue-600">Cart</a>
+            <a href="{% url 'order_history' %}" class="text-gray-700 hover:text-blue-600">Orders</a>
+            <a href="{% url 'profile' %}" class="text-gray-700 hover:text-blue-600">Profile</a>
+            <a href="{% url 'logout' %}" class="text-red-600 hover:text-red-800">Logout</a>
+        </div>
+    </nav>
 
-	<body class="bg-gray-50 font-serif leading-normal tracking-normal">
-		<div class="container mx-auto">
-			<section class="flex items-center justify-center h-screen">
-				<h1 class="text-5xl">Django + Tailwind = ❤️</h1>
-			</section>
-		</div>
-	</body>
+    <main class="p-6">
+        {% block content %}{% endblock %}
+    </main>
+</body>
 </html>

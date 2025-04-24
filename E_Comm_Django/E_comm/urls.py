@@ -12,4 +12,6 @@ urlpatterns = [
     path('place_order/', views.place_order, name='place_order'),
     path('order/<int:order_id>/', views.order_detail, name='order_detail'),
     path('order-success/<int:order_id>/', views.order_success, name='order_success'),
+    path('order-history/', views.order_history, name='order_history'),
+    path('profile/', views.profile_view, name='profile'),
 ]

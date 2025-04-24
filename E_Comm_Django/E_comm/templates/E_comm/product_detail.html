@@ -1,44 +1,63 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{{ product.name }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
+<!-- templates/E_comm/product_detail.html -->
+{% extends 'base.html' %}
+{% block content %}
 
-    <!-- Header with Logout on Right -->
-    <div class="flex justify-between items-center mb-6 max-w-3xl mx-auto">
-        <h1 class="text-2xl font-bold">Product Details</h1>
-
-        {% if user.is_authenticated %}
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                Logout
-            </button>
-        </form>
-        {% endif %}
+<div class="max-w-6xl mx-auto mt-10 px-4"> <div class="grid grid-cols-1 md:grid-cols-2 gap-8"> <!-- Product Images Section --> <div> <div class="bg-white p-4 rounded-xl shadow-md"> <!-- Main Image Display --> <div class="mb-4"> {% if product.images.filter.first %} <img id="main-image" src="{{ product.images.filter.first.image.url }}" alt="{{ product.name }}" class="w-full h-96 object-cover rounded-lg"> {% elif product.image %} <img id="main-image" src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-96 object-cover rounded-lg"> {% else %} <div class="w-full h-96 bg-gray-200 flex items-center justify-center rounded-lg"> <p class="text-gray-500">No image available</p> </div> {% endif %} </div>
+            <!-- Thumbnail Gallery -->
+            {% if product.images.count >= 2 %}
+                <div class="grid grid-cols-5 gap-2">
+                    {% for image in product.images.all %}
+                        <div class="cursor-pointer hover:opacity-75 transition-opacity duration-200 {% if forloop.first %}ring-2 ring-blue-500{% endif %}">
+                            <img src="{{ image.image.url }}" alt="{{ product.name }}" class="w-full h-20 object-cover rounded-md thumbnail-image" data-src="{{ image.image.url }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
-
-    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
-        {% if product.image %}
-            <img src="{{ product.image.url }}" class="w-full h-64 object-cover rounded mb-6">
-        {% endif %}
-        <h1 class="text-3xl font-bold">{{ product.name }}</h1>
-        <p class="text-gray-700 my-4">{{ product.description }}</p>
-        <p class="text-lg font-semibold text-green-600">₹{{ product.price }}</p>
-
-        <form method="post" class="mt-6 flex items-center gap-4">
-            {% csrf_token %}
-            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}"
-                class="border rounded px-3 py-2 w-20">
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Add to Cart
-            </button>
-        </form>
+    
+    <!-- Product Information Section -->
+    <div>
+        <h1 class="text-3xl font-bold mb-2">{{ product.name }}</h1>
+        <p class="text-2xl font-semibold text-blue-600 mb-4">₹{{ product.price }}</p>
+        
+        <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-2">Description</h2>
+            <p class="text-gray-700">{{ product.description }}</p>
+            
+            <div class="mt-4">
+                <p class="text-sm font-medium">
+                    {% if product.stock > 0 %}
+                        <span class="text-green-600">In Stock ({{ product.stock }} available)</span>
+                    {% else %}
+                        <span class="text-red-600">Out of Stock</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <!-- Add to Cart Form -->
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Add to Cart</h2>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                    <select name="quantity" id="quantity" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                        {% for i in "12345"|make_list %}
+                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Add to Cart
+                </button>
+            </form>
+        </div>
     </div>
+</div>
+</div> <script> // JavaScript for image gallery document.addEventListener('DOMContentLoaded', function() { const mainImage = document.getElementById('main-image'); const thumbnails = document.querySelectorAll('.thumbnail-image'); thumbnails.forEach(thumbnail => { thumbnail.addEventListener('click', function() { // Update main image mainImage.src = this.getAttribute('data-src'); // Update selected thumbnail styling thumbnails.forEach(thumb => { thumb.parentElement.classList.remove('ring-2', 'ring-blue-500'); }); this.parentElement.classList.add('ring-2', 'ring-blue-500'); }); }); }); </script>
+{% endblock %}
 
-</body>
-</html>

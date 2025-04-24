@@ -1,9 +1,11 @@
-from ..models import Product, CartItem, Order, Cart
+from ..models import Product, CartItem, Order, Cart, OrderItem, UserProfile, ProductImage
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
-
+from ..forms import UserProfileForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 def product_list(request):
     products = Product.objects.all()
@@ -12,6 +14,15 @@ def product_list(request):
 @login_required
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
+
+    # If the product has no images but has a main image, create a ProductImage from it
+    if not hasattr(product, 'images') or not product.images.exists():
+        if product.image:
+            ProductImage.objects.create(
+                product=product,
+                image=product.image,
+                is_thumbnail=True
+            )
 
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
@@ -24,7 +35,6 @@ def product_detail(request, pk):
         return redirect('cart')
 
     return render(request, 'E_comm/product_detail.html', {'product': product})
-
 @login_required
 def cart_view(request):
     cart_items = CartItem.objects.filter(user=request.user)
@@ -45,20 +55,33 @@ def order_success(request, order_id):
 def place_order(request):
     cart_items = CartItem.objects.filter(user=request.user)
     if not cart_items.exists():
-        return redirect('cart')    
+        return redirect('cart')
+
     total_amount = sum(item.product.price * item.quantity for item in cart_items)
     order = Order.objects.create(
         user=request.user,
         ordered_at=timezone.now(),
         total_amount=total_amount,
-        is_paid = True
+        is_paid=True
     )
-    order.items.set(cart_items)
-    order.save()
-    Cart.objects.filter(user=request.user, is_ordered=False).update(is_ordered=True)
+
+    # ✅ Create order items from cart items
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price
+        )
+
+    # ✅ Clean up cart
     cart_items.delete()
+    Cart.objects.filter(user=request.user, is_ordered=False).update(is_ordered=True)
     Cart.objects.create(user=request.user, is_ordered=False)
+
     return redirect('order_success', order_id=order.id)
+
+
 
 @login_required
 def order_detail(request, order_id):
@@ -74,3 +97,41 @@ def add_to_cart(request, product_id):
         cart_item.quantity += 1
         cart_item.save()
     return redirect('cart')  # Adjust according to your cart page name
+
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(user=request.user).order_by('-ordered_at')
+    return render(request, 'E_comm/order_history.html', {'orders': orders})
+
+@login_required
+def profile_view(request):
+    # Create profile if it doesn't exist
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    if request.method == 'POST':
+        if 'update_profile' in request.POST:
+            profile_form = UserProfileForm(request.POST, instance=profile)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Your profile has been updated!')
+                return redirect('profile')
+        elif 'change_password' in request.POST:
+            password_form = PasswordChangeForm(user=request.user, data=request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Your password was successfully updated!')
+                return redirect('profile')
+            else:
+                messages.error(request, 'Please correct the error below.')
+    else:
+        profile_form = UserProfileForm(instance=profile)
+        password_form = PasswordChangeForm(user=request.user)
+    
+    return render(request, 'E_comm/profile.html', {
+        'profile_form': profile_form,
+        'password_form': password_form,
+    })
+
+
+
