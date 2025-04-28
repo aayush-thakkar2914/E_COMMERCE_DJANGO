@@ -56,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'django_browser_reload.middleware.BrowserReloadMiddleware',
+    'E_comm.middleware.ServerRestartLogoutMiddleware'
 ]
 
 ROOT_URLCONF = "E_Comm_Django.urls"

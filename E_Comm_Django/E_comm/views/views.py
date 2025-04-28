@@ -24,7 +24,7 @@ def product_detail(request, pk):
                 is_thumbnail=True
             )
 
-    if request.method == 'POST':
+    if request.method == 'POST':    
         quantity = int(request.POST.get('quantity', 1))
         cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
         if not created:
@@ -57,6 +57,12 @@ def place_order(request):
     if not cart_items.exists():
         return redirect('cart')
 
+    # Check if all products have sufficient stock before creating order
+    for item in cart_items:
+        if item.product.stock < item.quantity:
+            messages.error(request, f"Sorry, only {item.product.stock} units of {item.product.name} available.")
+            return redirect('cart')
+
     total_amount = sum(item.product.price * item.quantity for item in cart_items)
     order = Order.objects.create(
         user=request.user,
@@ -65,7 +71,7 @@ def place_order(request):
         is_paid=True
     )
 
-    # ✅ Create order items from cart items
+    # Create order items from cart items and update product stock
     for item in cart_items:
         OrderItem.objects.create(
             order=order,
@@ -73,8 +79,12 @@ def place_order(request):
             quantity=item.quantity,
             price=item.product.price
         )
+        
+        # Update product stock
+        item.product.stock -= item.quantity
+        item.product.save()
 
-    # ✅ Clean up cart
+    # Clean up cart
     cart_items.delete()
     Cart.objects.filter(user=request.user, is_ordered=False).update(is_ordered=True)
     Cart.objects.create(user=request.user, is_ordered=False)
