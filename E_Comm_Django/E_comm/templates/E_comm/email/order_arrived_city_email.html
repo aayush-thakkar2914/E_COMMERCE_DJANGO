@@ -1,0 +1,176 @@
+<!-- templates/E_comm/email/order_arrived_city_email.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Arrived in Your City</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #9C27B0;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .order-info {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .delivery-info {
+            background-color: #f3e5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #e1bee7;
+        }
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .product-table th, .product-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .product-table th {
+            background-color: #f2f2f2;
+        }
+        .progress-tracker {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .progress-step {
+            display: inline-block;
+            margin: 0 5px;
+            font-size: 12px;
+        }
+        .step-active {
+            font-weight: bold;
+            color: #9C27B0;
+        }
+        .step-completed {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .step-inactive {
+            color: #aaa;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Your Order Has Arrived in Your City!</h1>
+    </div>
+    
+    <div class="content">
+        <p>Hello {{ user.first_name }},</p>
+        
+        <p>Exciting news! Your order has arrived in your city and is now at our local distribution center. You're just one step away from receiving your items!</p>
+        
+        <div class="order-info">
+            <h3>Order Details</h3>
+            <p><strong>Order Number:</strong> #{{ order.id }}</p>
+            <p><strong>Order Date:</strong> {{ order.ordered_at|date:"F j, Y, g:i a" }}</p>
+            <p><strong>Arrived in City:</strong> {{ order.arrived_city_at|date:"F j, Y, g:i a" }}</p>
+        </div>
+        
+        <div class="delivery-info">
+            <h3>Delivery Information</h3>
+            <p><strong>Expected Delivery:</strong> Within the next 6-12 hours</p>
+            <p><strong>Delivery Address:</strong></p>
+            <p>
+                {{ user.profile.address_line1 }}<br>
+                {% if user.profile.address_line2 %}{{ user.profile.address_line2 }}<br>{% endif %}
+                {{ user.profile.city }}, {{ user.profile.state }} {{ user.profile.postal_code }}<br>
+                {{ user.profile.country }}
+            </p>
+        </div>
+        
+        <h3>Your Order Contains</h3>
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>${{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
+                    <td>${{ order.total_amount }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div class="progress-tracker">
+            <div class="progress-step step-completed">
+                Order Placed
+            </div>
+            &gt;
+            <div class="progress-step step-completed">
+                Order Accepted
+            </div>
+            &gt;
+            <div class="progress-step step-completed">
+                Order Shipped
+            </div>
+            &gt;
+            <div class="progress-step step-active">
+                In Your City
+            </div>
+            &gt;
+            <div class="progress-step step-inactive">
+                Delivered
+            </div>
+        </div>
+        
+        <p>Our local delivery team is preparing your package for the final leg of its journey. You should receive your order within the next few hours.</p>
+        
+        <p>You can check your order status anytime by visiting your <a href="{{ site_url }}{% url 'order_detail' order.id %}">Order Details Page</a>.</p>
+        
+        <p>If you have any special instructions for delivery, please contact our customer service team as soon as possible.</p>
+        
+        <p>Thank you for your patience and for shopping with us!</p>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; {% now "Y" %} Your E-Commerce Store. All rights reserved.</p>
+    </div>
+</body>
+</html>

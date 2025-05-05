@@ -146,3 +146,11 @@ LOGOUT_REDIRECT_URL = 'login'
 TIME_ZONE = 'Asia/Kolkata'  
 USE_TZ = True
 
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # For Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'pragnya.lms@gmail.com'  # Replace with your email
+EMAIL_HOST_PASSWORD = 'hnsazrxstlgimyql'  # Replace with your email app password
+DEFAULT_FROM_EMAIL = 'E-Commerce Store <pragnya.lms@gmail.com>'  # Replace with your email

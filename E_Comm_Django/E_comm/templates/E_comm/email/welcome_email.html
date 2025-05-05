@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Our E-Commerce Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #4a6cf7;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: #666666;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4a6cf7;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to Our E-Commerce Store!</h1>
+    </div>
+    
+    <div class="content">
+        <p>Hello {{ username }},</p>
+        
+        <p>Thank you for registering with our E-Commerce Store! We're excited to have you as part of our community.</p>
+        
+        <p>Your account has been successfully created, and you can now enjoy the following benefits:</p>
+        
+        <ul>
+            <li>Browse our extensive catalog of products</li>
+            <li>Save items to your wishlist</li>
+            <li>Track your orders</li>
+            <li>Receive exclusive offers and discounts</li>
+        </ul>
+        
+        <p>If you have any questions or need assistance, please don't hesitate to contact our customer support team.</p>
+        
+        <p>Happy shopping!</p>
+        
+        <a href="http://127.0.0.1:8000/login" class="button">Visit Our Store</a>
+    </div>
+    
+    <div class="footer">
+        <p>This email was sent to you because you registered on our website.</p>
+        <p>© 2025 E-Commerce Store. All rights reserved.</p>
+    </div>
+</body>
+</html>

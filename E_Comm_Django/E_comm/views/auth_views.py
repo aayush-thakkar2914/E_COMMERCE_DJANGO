@@ -6,8 +6,12 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.core.cache import cache
 from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
-from ..forms import CustomLoginForm
+from ..forms import CustomUserCreationForm, CustomLoginForm
+from ..models import UserProfile
 
 # Function to create a cache key for the session
 def get_session_cache_key(session_key):
@@ -27,14 +31,44 @@ def user_logged_in_handler(sender, request, user, **kwargs):
 
 def signup_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            # Create the user
+            user = form.save(commit=False)
+            password = form.cleaned_data.get('password')
+            user.set_password(password)
+            user.save()
+            
+            # Create user profile
+            UserProfile.objects.create(user=user)
+            
+            # Send welcome email
+            send_welcome_email(user)
+            
+            # Log the user in
             login(request, user)
             return redirect('product_list')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'E_comm/signup.html', {'form': form})
+
+def send_welcome_email(user):
+    """Send a welcome email to the newly registered user"""
+    subject = 'Welcome to Our E-Commerce Store!'
+    html_message = render_to_string('E_comm/email/welcome_email.html', {
+        'username': user.username
+    })
+    plain_message = strip_tags(html_message)
+    
+    if user.email:  # Only send if user provided an email
+        send_mail(
+            subject,
+            plain_message,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
 
 def login_view(request):
     if request.method == 'POST':

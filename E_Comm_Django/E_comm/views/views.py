@@ -35,6 +35,7 @@ def product_detail(request, pk):
         return redirect('cart')
 
     return render(request, 'E_comm/product_detail.html', {'product': product})
+    
 @login_required
 def cart_view(request):
     cart_items = CartItem.objects.filter(user=request.user)
@@ -46,6 +47,7 @@ def remove_from_cart(request, item_id):
     item = get_object_or_404(CartItem, id=item_id, user=request.user)
     item.delete()
     return redirect('cart')
+    
 @login_required
 def order_success(request, order_id):
     order = Order.objects.get(id=order_id, user=request.user)
@@ -68,7 +70,8 @@ def place_order(request):
         user=request.user,
         ordered_at=timezone.now(),
         total_amount=total_amount,
-        is_paid=True
+        is_paid=True,
+        status='PLACED'  # Set initial status to PLACED
     )
 
     # Create order items from cart items and update product stock
@@ -91,12 +94,30 @@ def place_order(request):
 
     return redirect('order_success', order_id=order.id)
 
-
-
 @login_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    return render(request, 'E_comm/order_detail.html', {'order': order})
+    
+    # Update order status based on time elapsed
+    order.update_status()
+    
+    # Get status information for the progress bar
+    status_percentage = order.get_status_percentage()
+    
+    # Get expected delivery dates
+    expected_dates = {
+        'acceptance': order.ordered_at + timezone.timedelta(hours=1) if order.ordered_at else None,
+        'shipping': order.ordered_at + timezone.timedelta(days=1) if order.ordered_at else None,
+        'city_arrival': order.ordered_at + timezone.timedelta(days=2) if order.ordered_at else None,
+        'delivery': order.ordered_at + timezone.timedelta(days=2, hours=6) if order.ordered_at else None,
+    }
+    
+    context = {
+        'order': order,
+        'status_percentage': status_percentage,
+        'expected_dates': expected_dates,
+    }
+    return render(request, 'E_comm/order_detail.html', context)
 
 @login_required
 def add_to_cart(request, product_id):
@@ -111,6 +132,11 @@ def add_to_cart(request, product_id):
 @login_required
 def order_history(request):
     orders = Order.objects.filter(user=request.user).order_by('-ordered_at')
+    
+    # Update status for all orders
+    for order in orders:
+        order.update_status()
+        
     return render(request, 'E_comm/order_history.html', {'orders': orders})
 
 @login_required
@@ -142,6 +168,3 @@ def profile_view(request):
         'profile_form': profile_form,
         'password_form': password_form,
     })
-
-
-
