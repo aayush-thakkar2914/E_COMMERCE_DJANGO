@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
+from .email_utils import send_order_status_email
 
 # Product model
 class Product(models.Model):
@@ -32,10 +33,7 @@ class Cart(models.Model):
     is_ordered = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-# Order model
-# Add this to models.py
-# Import the email utility
-from .email_utils import send_order_status_email
+
 
 class Order(models.Model):
     ORDER_STATUS_CHOICES = (
@@ -157,7 +155,7 @@ class OrderItem(models.Model):
     def subtotal(self):
         return self.quantity * self.price
 
-# Add to models.py
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     address_line1 = models.CharField(max_length=255, null=True, blank=True)

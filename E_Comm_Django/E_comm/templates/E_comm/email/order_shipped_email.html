@@ -1,4 +1,5 @@
 <!-- templates/E_comm/email/order_shipped_email.html -->
+{% load email_extras %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -160,7 +161,7 @@
             </div>
         </div>
         
-        <p>You can track your package and view more details about your order by visiting your <a href="{{ site_url }}{% url 'order_detail' order.id %}">Order Details Page</a>.</p>
+        <p>You can track your package and view more details about your order by visiting your <a href="{{ "http://127.0.0.1:8000/" }}{% url 'order_detail' order.id %}">Order Details Page</a>.</p>
         
         <p>We'll notify you again when your order reaches your city and when it's delivered.</p>
         

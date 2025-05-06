@@ -88,7 +88,7 @@
             <h3>Order Details</h3>
             <p><strong>Order Number:</strong> #{{ order.id }}</p>
             <p><strong>Order Date:</strong> {{ order.ordered_at|date:"F j, Y, g:i a" }}</p>
-            <p><strong>Order Total:</strong> ${{ order.total_amount }}</p>
+            <p><strong>Order Total:</strong> ₹{{ order.total_amount }}</p>
         </div>
         
         <h3>Items in Your Order</h3>
@@ -106,15 +106,15 @@
                 <tr>
                     <td>{{ item.product.name }}</td>
                     <td>{{ item.quantity }}</td>
-                    <td>${{ item.price }}</td>
-                    <td>${{ item.subtotal }}</td>
+                    <td>₹{{ item.price }}</td>
+                    <td>₹{{ item.subtotal }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
             <tfoot>
                 <tr>
                     <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
-                    <td>${{ order.total_amount }}</td>
+                    <td>₹{{ order.total_amount }}</td>
                 </tr>
             </tfoot>
         </table>
@@ -143,7 +143,7 @@
         
         <p>What's next? Your order will be packaged and handed over to our shipping partner soon. You'll receive another email notification when your order ships.</p>
         
-        <p>You can track your order status at any time by visiting your <a href="{{ site_url }}{% url 'order_detail' order.id %}">Order Details Page</a>.</p>
+        <p>You can track your order status at any time by visiting your <a href="{{ "http://127.0.0.1:8000/" }}{% url 'order_detail' order.id %}">Order Details Page</a>.</p>
         
         <p>If you have any questions about your order, our customer service team is here to help.</p>
         
